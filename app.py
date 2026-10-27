@@ -101,16 +101,34 @@ elif input_mode == "Gunakan Kamera":
         image_bgr = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
 
 st.sidebar.markdown("---")
-st.sidebar.subheader("📐 Orientasi Tangan (PCD)")
+st.sidebar.subheader("📐 Orientasi & Format Tangan (PCD)")
 auto_align = st.sidebar.checkbox("🔄 Auto-Rotate Alignment", value=True, help="Menegakkan tangan miring secara otomatis menggunakan Momen Inersia Citra (PCA)")
 manual_rot = st.sidebar.selectbox("Putar Manual:", [0, 90, 180, 270], format_func=lambda x: f"{x}°")
 
+hand_format = st.sidebar.radio(
+    "Format Foto Tangan:",
+    ["Hanya Telapak (Close-up / Sampel)", "Seluruh Tangan (Ada Jari-Jari)"],
+    index=1 if input_mode != "Gunakan Sampel Bawaan" else 0,
+    help="Gunakan 'Seluruh Tangan' jika foto Anda memuat jari tangan agar garis deteksi tidak meleset ke ruas jari."
+)
+
+if hand_format == "Seluruh Tangan (Ada Jari-Jari)":
+    default_yh = (42, 58)
+    default_yhd = (56, 72)
+    default_yl = (60, 94)
+    default_yf = (50, 92)
+else:
+    default_yh = (28, 48)
+    default_yhd = (45, 68)
+    default_yl = (48, 92)
+    default_yf = (38, 88)
+
 with st.sidebar.expander("🎛️ Penyesuaian Posisi 4 Garis (Kalibrasi)", expanded=False):
     st.caption("Ubah rentang jika foto tangan memiliki proporsi jari yang unik:")
-    yh = st.slider("Zona Garis Hati (% tinggi):", 10, 65, (28, 48))
-    yhd = st.slider("Zona Garis Kepala (% tinggi):", 25, 75, (45, 68))
-    yl = st.slider("Zona Garis Hidup (% tinggi):", 35, 98, (48, 92))
-    yf = st.slider("Zona Garis Nasib (% tinggi):", 20, 95, (38, 88))
+    yh = st.slider("Zona Garis Hati (% tinggi):", 10, 80, default_yh)
+    yhd = st.slider("Zona Garis Kepala (% tinggi):", 20, 85, default_yhd)
+    yl = st.slider("Zona Garis Hidup (% tinggi):", 30, 98, default_yl)
+    yf = st.slider("Zona Garis Nasib (% tinggi):", 20, 95, default_yf)
 
 zone_params = {
     "y_heart": (yh[0] / 100.0, yh[1] / 100.0),

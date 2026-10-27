@@ -64,3 +64,4 @@ python tests/test_pipeline.py
 python -m streamlit run app.py
 ```
 Buka browser pada `http://localhost:8501`.
+
